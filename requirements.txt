@@ -1,0 +1,19 @@
+# Utitlities
+numpy
+pandas
+
+# Face Recognition
+scikit-learn
+dlib-bin
+# dlib-20.0.99-cp314-cp314-win_amd64.whl
+
+git+https://github.com/ageitgey/face_recognition_models
+setuptools
+
+supabase
+bcrypt
+
+segno
+pillow
+
+streamlit
