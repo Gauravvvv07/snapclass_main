@@ -10,7 +10,7 @@ dlib-bin
 # dlib-20.0.99-cp314-cp314-win_amd64.whl
 
 git+https://github.com/ageitgey/face_recognition_models
-setuptools
+setuptools<81   
 
 supabase
 bcrypt
