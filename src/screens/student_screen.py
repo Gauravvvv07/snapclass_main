@@ -6,9 +6,9 @@ from src.components.header import header_dashboard
 from src.components.footer import footer_dashboard
 from PIL import Image
 import numpy as np
-from src.pipelines.face_pipeline import predict_attendance, get_face_embeddings, train_classifier
+from src.pipelines.face_pipeline import predict_attendance, get_face_embeddings
 from src.pipelines.voice_pipeline import get_voice_embedding
-from src.database.db import get_all_students, create_student , get_student_subjects, get_student_attendance, unenroll_student_to_subject
+from src.database.db import get_all_students, create_student, get_student_subjects, get_student_attendance, unenroll_student_to_subject
 import time
 
 from src.components.dialog_enroll import enroll_dialog
@@ -117,7 +117,7 @@ def student_screen():
         img = np.array(Image.open(photo_source))
 
         with st.spinner('AI is scanning..'):
-            detected, all_ids, num_faces = predict_attendance(img)
+            detected, _, num_faces = predict_attendance(img)
 
             if num_faces == 0:
                 st.warning('Face not found!')
@@ -142,7 +142,7 @@ def student_screen():
     if show_registration:
         with st.container(border=True):
             st.header('Register new Profile')
-            new_name = st.text_input("Enter your name", placeholder='E.g. John Doe')
+            new_name = st.text_input("Enter your name", placeholder='E.g. Hamza Rizvi')
 
             st.subheader('Optional : Voice Enrollment')
             st.info("Enroll your for voice only attendance")
@@ -151,7 +151,7 @@ def student_screen():
             audio_data = None
 
             try:
-                audio_data = st.audio_input('Record a short phrase like I am present, My name is John Doe.')
+                audio_data = st.audio_input('Record a short phrase like I am present, My name is Akash.')
             except Exception:
                 st.error('Audio Data failed!')
 
@@ -170,7 +170,6 @@ def student_screen():
                             response_data = create_student(new_name, face_embedding=face_emb, voice_embedding=voice_emb)
 
                             if response_data:
-                                train_classifier()
                                 st.session_state.is_logged_in = True
                                 st.session_state.user_role = 'student'
                                 st.session_state.student_data = response_data[0]

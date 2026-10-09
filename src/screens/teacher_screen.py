@@ -107,16 +107,20 @@ def teacher_tab_take_attendance():
     
     subject_options = {f"{s['name']} - {s['subject_code']}": s['subject_id'] for s in subjects}
 
-    col1, col2 = st.columns([3,1], vertical_alignment='bottom')
+    col1, col2, col3 = st.columns([2, 1, 1], vertical_alignment='bottom')
 
     with col1:
         selected_subject_label = st.selectbox('Select Subject', options=list(subject_options.keys()))
+
+    selected_subject_id = subject_options[selected_subject_label]
 
     with col2:
         if st.button('Add Photos', type='primary', icon=':material/photo_prints:', width='stretch'):
             add_photos_dialog()
 
-    selected_subject_id = subject_options[selected_subject_label]
+    with col3:
+        if st.button('Voice Attendance', type='secondary', icon=':material/mic:', width='stretch'):
+            voice_attendance_dialog(selected_subject_id)
 
     st.divider()
 
@@ -128,7 +132,7 @@ def teacher_tab_take_attendance():
             with gallery_cols[idx % 4 ]:
                 st.image(img, width='stretch', caption=f'Photo {idx+1}')
     has_photos = bool(st.session_state.attendance_images)
-    c1, c2, c3 = st.columns(3)
+    c1, c2 = st.columns(2)
 
     with c1:
         if st.button('Clear all photos', width='stretch', type='tertiary', icon=':material/delete:', disabled=not has_photos):
@@ -153,22 +157,35 @@ def teacher_tab_take_attendance():
 
                             all_detected_ids.setdefault(student_id, []).append(f"Photo {idx+1}")
 
-                enrolled_res = supabase.table('subject_students').select("*, students(*)").eq('subject_id',selected_subject_id ).execute()
-                enrolled_students = enrolled_res.data
+                
+                enrolled_res = (
+                    supabase.table('subject_students')
+                    .select("*, students(*)")
+                    .eq('subject_id', selected_subject_id)
+                    .execute()
+                )
+
+                enrolled_students = enrolled_res.data or []
 
                 if not enrolled_students:
                     st.warning('No students enrolled in this course')
+
                 else:
+                    results = []
+                    attendance_to_log = []
 
-                    results, attendance_to_log  = [], []
-
-                    current_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-
+                    current_timestamp = datetime.now().strftime(
+                        "%Y-%m-%dT%H:%M:%S"
+                    )
 
                     for node in enrolled_students:
                         student = node['students']
-                        sources = all_detected_ids.get(int(student['student_id']), [])
-                        is_present= len(sources) > 0
+
+                        sources = all_detected_ids.get(
+                            int(student['student_id']), []
+                        )
+
+                        is_present = len(sources) > 0
 
                         results.append({
                             "Name": student['name'],
@@ -184,22 +201,11 @@ def teacher_tab_take_attendance():
                             'is_present': bool(is_present)
                         })
 
-                attendance_result_dialog(pd.DataFrame(results), attendance_to_log)
-
-    with c3:
-        if st.button('Use Voice Attendance', type='primary', width='stretch', icon=':material/mic:'):
-            voice_attendance_dialog(selected_subject_id)
-
-
-
-
-
-
-
-
-
-
-
+                    # Show results only when enrolled students exist
+                    attendance_result_dialog(
+                        pd.DataFrame(results),
+                        attendance_to_log
+                    )
 def teacher_tab_manage_subjects():
     teacher_id = st.session_state.teacher_data['teacher_id']
     col1, col2 = st.columns(2)
