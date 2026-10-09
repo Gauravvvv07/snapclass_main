@@ -17,9 +17,11 @@ import numpy as np
 from datetime import datetime
 
 import pandas as pd
-from src.database.config import supabase
-from src.components.dialog_voice_attendance import voice_attendance_dialog
 
+from src.database.config import supabase
+
+
+from src.components.dialog_voice_attendance import voice_attendance_dialog
 def teacher_screen():
 
     style_background_dashboard()
@@ -189,6 +191,15 @@ def teacher_tab_take_attendance():
             voice_attendance_dialog(selected_subject_id)
 
 
+
+
+
+
+
+
+
+
+
 def teacher_tab_manage_subjects():
     teacher_id = st.session_state.teacher_data['teacher_id']
     col1, col2 = st.columns(2)
@@ -301,7 +312,7 @@ def teacher_screen_login():
     st.space()
 
 
-    teacher_username = st.text_input("Enter username", placeholder='johndoe123')
+    teacher_username = st.text_input("Enter username", placeholder='ananyaroy')
 
     teacher_pass = st.text_input("Enter password", type='password', placeholder="Enter password")
 
@@ -359,9 +370,9 @@ def teacher_screen_register():
     st.space()
 
     
-    teacher_username = st.text_input("Enter username", placeholder='johndoe123')
+    teacher_username = st.text_input("Enter username", placeholder='ananyaroy')
 
-    teacher_name = st.text_input("Enter name", placeholder='John Doe')
+    teacher_name = st.text_input("Enter name", placeholder='Ananya Roy')
 
     teacher_pass = st.text_input("Enter password", type='password', placeholder="Enter password")
 
